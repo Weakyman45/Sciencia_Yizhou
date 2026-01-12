@@ -44,6 +44,20 @@ Source: https://ai.stanford.edu/~amaas/data/sentiment/
 
 ---
 
+## 5) Google Play Store
+
+- **Long-term maintainability:** The google-play-scraper library interacts with internal endpoints that rarely change, requiring no API keys or authentication.
+- **Feasibility at scale:** It allows for heavy scraping volume with lenient rate limits.
+- **Data richness and modeling value:** High. It provides explicit ground-truth labels (1-5 stars) paired with text, timestamps, and app versions.
+- **Bias and representativeness:** Skewed toward the Android demographics.
+
+## 6) Apple App Store
+
+- **Long-term maintainability:** Medium. Access is reliable via the iTunes RSS/Search API, but Apple is stricter about blocking aggressive IPs.
+- **Feasibility at scale:** Medium. Rate limits are tighter than Google's.
+- **Data richness and modeling value:** High. The reviews are often longer and higher quality textually. Like Google, it offers the critical "Star Rating + Text" pair.
+- **Bias and representativeness:** Heavily reflects the IOS user base.
+
 # Conclusion
 
 I first want to exclude the Stanford movie review dataset and the Amazon review dataset because they are static.
@@ -51,3 +65,7 @@ I first want to exclude the Stanford movie review dataset and the Amazon review 
 While Bluesky is strong in long-term maintainability and feasibility at scale, it currently lacks the semantic depth required for high-quality sentiment modeling. It lacks explicit ratings and, critically, lacks the nested threaded debates necessary to analyze how sentiment evolves in a conversation. I am also concerned that the user base might be skewed, given that I have not seen many people using it.
 
 So, I would personally suggest **Reddit** as our data source. It offers the highest data richness and modeling value. The combination of upvotes, timestamps, and deep conversation trees allows us to meet the project goal of understanding how users think, feel, and behave better. The main trade-off is the 100 queries per minute rate limit, but I don’t think it is a deal-breaker.
+
+However, my request for reddit api access got declined even if I had made my request form as detailed as possible. To avoid wasting time merely waiting for another reply from the reddit support team, John suggested that I may consider Google Play Store and Apple App Store as alternative data sources.
+
+After I carefully examined these two data sources, I found them highly feasible. I would suggest using both sources in a hybrid pipeline because that maximizes data richness while neutralizing the Bias inherent in using a single platform.
