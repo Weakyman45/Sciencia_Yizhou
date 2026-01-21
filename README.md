@@ -113,39 +113,58 @@ The two platforms have different field structures that will need alignment for a
 
 ---
 
-# Schema
+# Database Schema — Entity-Relationship Diagram
 
-┌─────────────────────┐ ┌─────────────────────┐
-│ platforms │ │ apps │
-├─────────────────────┤ ├─────────────────────┤
-│ PK platform_id │◄──┐ │ PK app_id │
-│ name │ │ │ FK platform_id │──┐
-│ display_name │ │ │ app_name │ │
-│ created_at │ │ │ bundle_id │ │
-└─────────────────────┘ │ │ category │ │
-│ │ created_at │ │
-│ └─────────────────────┘ │
-│ │
-│ │
-│ ┌─────────────────────┐ │
-│ │ reviews │ │
-│ ├─────────────────────┤ │
-│ │ PK review_id │ │
-└───│ FK platform_id │ │
-│ FK app_id │◄─┘
-│ source_review_id│
-│ author_name │
-│ title │ ← Apple only
-│ content │
-│ rating │
-│ app_version │
-│ review_date │
-│ thumbs_up_count │ ← Google only
-│ developer_reply │ ← Google only
-│ developer_reply_date │
-│ ingested_at │
-│ is_duplicate │
-│ sentiment_label │ ┐
-│ labeled_at │ ├─ ML fields
-│ labeled_by │ ┘
-└─────────────────────┘
+**Project:** Sciencia AI — Data Ingestion System  
+**Date:** January 2026
+
+---
+
+# ERD
+
+```
+┌─────────────────────┐       ┌─────────────────────┐
+│     platforms       │       │        apps         │
+├─────────────────────┤       ├─────────────────────┤
+│ PK  platform_id     │◄──┐   │ PK  app_id          │
+│     name            │   │   │ FK  platform_id     │──┐
+│     display_name    │   │   │     app_name        │  │
+│     created_at      │   │   │     bundle_id       │  │
+└─────────────────────┘   │   │     category        │  │
+                          │   │     created_at      │  │
+                          │   └─────────────────────┘  │
+                          │                            │
+                          │                            │
+                          │   ┌─────────────────────┐  │
+                          │   │      reviews        │  │
+                          │   ├─────────────────────┤  │
+                          │   │ PK  review_id       │  │
+                          └───│ FK  platform_id     │  │
+                              │ FK  app_id          │◄─┘
+                              │     source_review_id│
+                              │     author_name     │
+                              │     title           │  ← Apple only
+                              │     content         │
+                              │     rating          │
+                              │     app_version     │
+                              │     review_date     │
+                              │     thumbs_up_count │  ← Google only
+                              │     developer_reply │  ← Google only
+                              │     developer_reply_date │
+                              │     ingested_at     │
+                              │     is_duplicate    │
+                              │     sentiment_label │  ┐
+                              │     labeled_at      │  ├─ ML fields
+                              │     labeled_by      │  ┘
+                              └─────────────────────┘
+```
+
+---
+
+## Table Summary
+
+| Table       | Purpose                          | Key Fields                               |
+| ----------- | -------------------------------- | ---------------------------------------- |
+| `platforms` | Reference table for data sources | name, display_name                       |
+| `apps`      | App metadata                     | app_name, bundle_id, category            |
+| `reviews`   | Unified review data              | content, rating, review_date + ML fields |
