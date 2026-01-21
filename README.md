@@ -113,13 +113,6 @@ The two platforms have different field structures that will need alignment for a
 
 ---
 
-# Database Schema — Entity-Relationship Diagram
-
-**Project:** Sciencia AI — Data Ingestion System  
-**Date:** January 2026
-
----
-
 # ERD
 
 ```
