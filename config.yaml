@@ -1,0 +1,67 @@
+database:
+  path: "data/reviews.db"
+  schema_file: "schema.sql"
+
+# Data sources configuration
+sources:
+  google_play:
+    enabled: true
+    # Single app approach (Reddit)
+    app_id: "com.reddit.frontpage"
+    app_name: "Reddit"
+    target_reviews: 1000
+    language: "en"
+    country: "us"
+
+  apple_app_store:
+    enabled: true
+    # Dynamic discovery approach
+    target_reviews: 2000
+    countries:
+      - "us"
+    search_terms:
+      - "game"
+      - "music"
+      - "photo"
+      - "fitness"
+      - "calendar"
+      - "ai"
+      - "chat"
+      - "learn"
+      - "finance"
+      - "weather"
+      - "maps"
+      - "camera"
+      - "notes"
+      - "video"
+      - "shopping"
+      - "travel"
+      - "food"
+      - "health"
+      - "sleep"
+      - "scanner"
+      - "budget"
+      - "vpn"
+    search_limit: 200
+    max_pages_per_app: 10
+
+pipeline:
+  batch_size: 100
+  min_delay_between_search_calls: 3.5 # Apple search API
+  min_delay_between_rss_calls: 0.4 # Apple RSS feeds
+  retry_attempts: 3
+
+# Resume settings (for Apple's incremental collection)
+resume:
+  enabled: true
+  seen_keys_file: "data/apple_seen_keys.txt"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/pipeline.log"
+
+# Output files (intermediate, before DB load)
+output:
+  google_play_json: "data/google_play_reviews.json"
+  apple_jsonl: "data/apple_reviews.jsonl"
