@@ -58,10 +58,55 @@ CREATE TABLE IF NOT EXISTS pipeline_runs (
     started_at TIMESTAMP NOT NULL,
     completed_at TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'running',
+    
     reviews_fetched INTEGER DEFAULT 0,
+    reviews_fetched_google INTEGER DEFAULT 0,
+    reviews_fetched_apple INTEGER DEFAULT 0,
+
     reviews_inserted INTEGER DEFAULT 0,
     reviews_skipped INTEGER DEFAULT 0,
     errors INTEGER DEFAULT 0,
+    
+    fetch_duration_seconds REAL,
+    transform_duration_seconds REAL,
+    load_duration_seconds REAL,
+    total_duration_seconds REAL,
+    
+    duplicate_content_count INTEGER DEFAULT 0,
+    missing_app_version_count INTEGER DEFAULT 0,
+    
+    rating_1_count INTEGER DEFAULT 0,
+    rating_2_count INTEGER DEFAULT 0,
+    rating_3_count INTEGER DEFAULT 0,
+    rating_4_count INTEGER DEFAULT 0,
+    rating_5_count INTEGER DEFAULT 0,
+    
+    fetch_retries INTEGER DEFAULT 0,
+    fetch_failures INTEGER DEFAULT 0,
+    
     error_message TEXT,
+    
+    config_interval VARCHAR(50),
+    config_google_target INTEGER,
+    config_apple_target INTEGER,
+    
     CONSTRAINT valid_status CHECK (status IN ('running', 'success', 'failed', 'warning'))
 );
+
+CREATE TABLE IF NOT EXISTS monitoring_alerts (
+    alert_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id INTEGER NOT NULL,
+    alert_type VARCHAR(50) NOT NULL,  -- 'rate_drop', 'quality_issue', 'duration_spike', etc.
+    severity VARCHAR(20) NOT NULL,     -- 'info', 'warning', 'critical'
+    message TEXT NOT NULL,
+    metric_name VARCHAR(100),
+    metric_value REAL,
+    threshold_value REAL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (run_id) REFERENCES pipeline_runs(run_id)
+);
+
+-- Index for alerts
+CREATE INDEX IF NOT EXISTS idx_alerts_run ON monitoring_alerts(run_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_type ON monitoring_alerts(alert_type);
+CREATE INDEX IF NOT EXISTS idx_alerts_severity ON monitoring_alerts(severity);

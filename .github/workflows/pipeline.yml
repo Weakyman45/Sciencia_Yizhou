@@ -1,8 +1,21 @@
+# Default: every 4 hours. Adjust the cron expression to test different intervals.
+#
+# Frequency options:
+#   - Daily:        cron: '0 2 * * *'
+#   - Every 6 hours: cron: '0 */6 * * *'
+#   - Every 4 hours: cron: '0 */4 * * *'  (CURRENT)
+#   - Every 2 hours: cron: '0 */2 * * *'
+#   - Hourly:       cron: '0 * * * *'
+# =============================================================================
+
 name: Data Ingestion Pipeline
 
 on:
+  # Scheduled run - currently set to every 4 hours
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "0 */4 * * *"
+
+  # Allow manual trigger with options
   workflow_dispatch:
     inputs:
       dry_run:
@@ -24,7 +37,7 @@ on:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60 # Reduced since per-run targets are smaller now
 
     steps:
       - name: Checkout repository
@@ -58,13 +71,19 @@ jobs:
           fi
           python run_pipeline.py $ARGS
 
+      - name: Display monitoring report
+        if: success()
+        run: |
+          echo "=== MONITORING REPORT ==="
+          python run_pipeline.py --report || true
+
       - name: Upload logs as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pipeline-logs-${{ github.run_number }}
           path: logs/
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload database as artifact
         if: success() && github.event.inputs.dry_run != 'true'
@@ -79,10 +98,10 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add data/reviews.db data/apple_seen_keys.txt 2>/dev/null || true
+          git add data/reviews.db data/apple_seen_keys.txt logs/monitoring_report.txt 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Pipeline run: $(date -u +%Y-%m-%d_%H:%M:%S)"
+            git commit -m "Pipeline run: $(date -u +%Y-%m-%d_%H:%M:%S) [auto]"
             git push
           fi

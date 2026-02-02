@@ -50,6 +50,7 @@ pipeline:
   min_delay_between_search_calls: 3.5 # Apple search API
   min_delay_between_rss_calls: 0.4 # Apple RSS feeds
   retry_attempts: 3
+  retry_delay_seconds: 5
 
 # Resume settings (for Apple's incremental collection)
 resume:
@@ -60,6 +61,38 @@ resume:
 logging:
   level: "INFO"
   file: "logs/pipeline.log"
+
+schedule:
+  # Current frequency setting
+  frequency: "every_4_hours" # Options: daily, every_6_hours, every_4_hours, every_2_hours, hourly
+
+  # Cron expressions for each frequency (for reference)
+  # daily:        "0 2 * * *"       (2:00 AM UTC)
+  # every_6_hours: "0 */6 * * *"    (00:00, 06:00, 12:00, 18:00 UTC)
+  # every_4_hours: "0 */4 * * *"    (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+  # every_2_hours: "0 */2 * * *"    (every even hour)
+  # hourly:       "0 * * * *"       (every hour)
+
+monitoring:
+  enabled: true
+
+  alerts:
+    # Alert if new records drop below this % of recent average
+    min_records_pct: 50
+
+    # Alert if runtime exceeds this multiple of recent average
+    max_duration_multiplier: 2.0
+
+    # Alert if error rate exceeds this percentage
+    max_error_rate_pct: 5
+
+    # Alert if rating distribution shifts by more than this (percentage points)
+    rating_drift_threshold_pct: 10
+
+  # Report settings
+  report:
+    generate_after_run: true
+    output_file: "logs/monitoring_report.txt"
 
 # Output files (intermediate, before DB load)
 output:
