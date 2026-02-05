@@ -161,3 +161,46 @@ The two platforms have different field structures that will need alignment for a
 | `platforms` | Reference table for data sources | name, display_name                       |
 | `apps`      | App metadata                     | app_name, bundle_id, category            |
 | `reviews`   | Unified review data              | content, rating, review_date + ML fields |
+
+# Pipeline Building
+
+## Architecture
+
+The pipeline follows a three-stage architecture:
+
+```
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│   FETCH     │ ───▶ │  TRANSFORM  │ ───▶ │    LOAD     │
+└─────────────┘      └─────────────┘      └─────────────┘
+      │                     │                     │
+      ▼                     ▼                     ▼
+  Raw JSON          Normalized JSON        SQLite Database
+```
+
+Detailed information can be found in pipeline_architecture.md
+
+# Monitoring
+
+Detailed information can be found in pipeline_architecture.md
+
+# Summary
+
+This project implements a production-ready ETL pipeline for ingesting mobile app reviews from Google Play Store and Apple App Store. The pipeline demonstrates:
+
+## Key Achievements
+
+### 1. Dual-Platform Data Ingestion
+
+### 2. Robust Data Pipeline
+
+- **Three-stage architecture:** Fetch → Transform → Load
+- **Data normalization:** Unified schema for heterogeneous sources
+- **Quality assurance:** Validation, deduplication, error handling
+- **Resume capability:** Incremental fetching for Apple reviews
+- **Configurable scheduling:** Hourly to daily execution options
+
+### 3. Production-Grade Monitoring
+
+- **Comprehensive metrics:** Execution timing, data quality, error rates
+- **Automated reporting:** Post-run monitoring reports
+- **Alerting system:** Configurable thresholds for anomaly detection
